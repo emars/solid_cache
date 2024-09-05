@@ -51,22 +51,22 @@ class SolidCache::InstallGenerator < Rails::Generators::Base
     end
 
     def app_name_from_production_database_name
-      database_yml.read.scan(/database: (\w+)_production/).flatten.first
+      database_yml.read.scan(/database: (\w+)_production/).flatten.first || "app"
     end
 
     def generic_database_config_with_cache
       app_name = app_name_from_production_database_name
 
       <<~YAML
-production:
-  primary: &production_primary
-    <<: *default
-    database: #{app_name}_production
-    username: #{app_name}
-    password: <%= ENV["#{app_name.upcase}_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *production_primary
-    database: #{app_name}_production_cache
+      production:
+        primary: &production_primary
+          <<: *default
+          database: #{app_name}_production
+          username: #{app_name}
+          password: <%= ENV["#{app_name.upcase}_DATABASE_PASSWORD"] %>
+        cache:
+          <<: *production_primary
+          database: #{app_name}_production_cache
       YAML
     end
 end
